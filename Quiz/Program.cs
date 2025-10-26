@@ -20,17 +20,30 @@ Console.WriteLine($"The user type is {userType}");
 if (userType == 1)
 {
     Console.WriteLine("You have selected Admin. \n First, enter a quiz ID. This can be a new ID or an existing one, in case you want to update an existing quiz");
-    string quizId = Console.ReadLine();
+    int quizId = -1;
+    bool isValidId = false;
+
+    while (!isValidId || quizId < 0)
+    {
+        Console.WriteLine("Please enter a valid positive integer for the quiz ID.");
+        isValidId = int.TryParse(Console.ReadLine(), out quizId);
+        if (isValidId && quizId >=0)
+        {
+            break;
+        }
+    }
+
     List<Entry> questions = new List<Entry>();
     Quiz quiz = new Quiz(quizId, questions);
 
     int selectedChoice;
     do
     {
-        Console.WriteLine($"You are setting the questions for quiz ID {quizId}. Select what you want to do from the list below: ");
+        Console.WriteLine($"You are setting the questions for quiz {quizId}. Select what you want to do from the list below: ");
         Console.WriteLine("1. Add a question");
         Console.WriteLine("2. View questions");
-        Console.WriteLine("3. Exit");
+        Console.WriteLine("3. Save quiz and Exit");
+        Console.WriteLine("4. Exit without saving");
 
         while (!int.TryParse(Console.ReadLine(), out selectedChoice) || (selectedChoice < 1 || selectedChoice > 3))
         {
@@ -51,8 +64,13 @@ if (userType == 1)
         } else if (selectedChoice == 2)
         {
             quiz.displayQuiz();
+        } else if (selectedChoice == 3)
+        {
+            quiz.saveToJson();
+            Console.WriteLine("Quiz saved successfully. Exiting now.");
+            break;
         }
-    } while (selectedChoice != 3);
+    } while (selectedChoice != 4);
 } else
 {
     Console.WriteLine("Welcome to the quiz as a Player!");
